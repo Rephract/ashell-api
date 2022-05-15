@@ -8,4 +8,4 @@ router.register(r'email-templates', viewsets.EmailTemplateViewset, basename='ema
 router.register(r'landing-pages', viewsets.LandingPageViewset, basename='landing-page')
 router.register(r'sending-profiles', viewsets.SendingProfileViewset, basename='sending-profile')
 
-urlpatterns = [] + router.get_urls() 
+urlpatterns = [] + router.get_urls()

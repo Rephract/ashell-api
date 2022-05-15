@@ -8,6 +8,7 @@ djangorestframework==3.12.1
 django-filter
 django-oauth-toolkit==1.7.1
 dnspython
+drf-yasg
 paramiko
 psycopg2-binary==2.9.3
 python-decouple
@@ -17,3 +18,4 @@ ratelimiter
 redis==3.5.3
 requests
 shortuuid
+validators
