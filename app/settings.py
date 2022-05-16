@@ -91,9 +91,20 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
         'PORT': os.environ.get('POSTGRES_PORT', 5432),
+    },
+    "nonrel": {
+        "ENGINE": "djongo",
+        "NAME": os.environ.get('MONGO_DB_NAME'),
+        "CLIENT": {
+            "host": os.environ.get('MONGO_DB_HOST'),
+            "port": int(os.environ.get('MONGO_DB_PORT')),
+            "username": os.environ.get('MONGO_DB_USERNAME'),
+            "password": os.environ.get('MONGO_DB_PASSWORD'),
+        },
     }
 }
 
+DATABASE_ROUTERS = ['core.db_routers.MultiDatabaseRouter']
 
 # Password validation
 
@@ -158,25 +169,36 @@ OAUTH2_PROVIDER = {
 # Logging
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": not DEBUG,
+    "disable_existing_loggers": False,
     "formatters": {
         "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s:=> %(message)s", },
+        "mongo_log": {"format": "%(message)s"},
     },
     "handlers": {
-        "log_docker": {
+        "console": {
             "level": "INFO",
             "class": "logging.StreamHandler",
             "formatter": "standard",
         },
+        "mongo_handler": {
+            "class": "core.handlers.LoggingHandler",
+            "formatter": "mongo_log"
+        }
     },
     "loggers": {
         "": {
-            "handlers": ["log_docker"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
         },
+        "mongo_logger": {
+            "handlers": ["console", "mongo_handler"],
+            "level": "INFO",
+            "propagate": True,
+        }
     },
 }
 
 AUTH_CLIENT_ID = os.environ.get('AUTH_CLIENT_ID')
 AUTH_CLIENT_SECRET = os.environ.get('AUTH_CLIENT_SECRET')
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
