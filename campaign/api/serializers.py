@@ -1,11 +1,10 @@
-from attr import attr
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 
 import validators
 
-from campaign.models import Domain, EmailTemplate, LandingPage, SendingProfile
+from campaign.models import Domain, EmailTemplate, LandingPage, Scenario, SendingProfile
 
 class DomainSerializer(serializers.ModelSerializer):
 
@@ -89,3 +88,21 @@ class SendingProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(_("Sender email address is not valid"))
         attrs['domain'] = domain
         return attrs
+
+
+class ScenarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scenario
+        fields = [
+            'id',
+            'name',
+            'description',
+            'email_template',
+            'landing_page',
+            'tags',
+            'is_global'
+        ]
+
+    # def validate(self, value):
+    #     if 
+    #     return value

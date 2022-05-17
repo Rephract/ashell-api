@@ -32,8 +32,7 @@ class SendingProfile(BaseModel):
     sender = models.CharField(max_length=255, help_text="Friendly sender name",)
     prefix = models.CharField(max_length=255, help_text="Prefix of sender (partition before @)", )
     domain = models.ForeignKey('Domain', on_delete=models.CASCADE)
-    is_verified_smtp_dns = models.BooleanField(default=False, help_text="Is domain verified for SMTP server")
-    is_verified_landing_page_dns = models.BooleanField(default=False, help_text="Is domain verified for Landing Page DNS")
+    is_verified_dns = models.BooleanField(default=False, help_text="Is domain verified for SMTP server")
 
     class Meta:
         db_table = "sending_profile"
@@ -155,8 +154,10 @@ class Scenario(BaseModel):
     description = models.TextField(blank=True)
     email_template = models.ForeignKey(EmailTemplate, on_delete=models.SET_NULL, null=True)
     landing_page = models.ForeignKey(LandingPage, on_delete=models.SET_NULL, null=True)
+    sending_profile = models.ForeignKey(SendingProfile, on_delete=models.SET_NULL, null=True)
     tags = models.ManyToManyField('Tag', related_name="tags", blank=True)
-    is_global = models.BooleanField(default=False, help_text="Is scenario globally available for users")
+    is_global = models.BooleanField(default=False, help_text="Is scenario globally available for all users")
+    is_draft = models.BooleanField(default=False, help_text="Is scenario saved as draft")
 
     objects = ScenarioManager()
 
@@ -167,16 +168,5 @@ class Scenario(BaseModel):
         return self.name
 
     @property
-    def get_tags(self):
+    def tags(self):
         return self.tags.filter(user=self.user)
-
-    @property
-    def is_ready(self):
-        """Check if DNS records are verified
-        """
-        if self.email_template and self.landing_page:
-            if all([
-                self.email_template.domain.is_verified_smtp_dns,
-                self.landing_page.domain.is_verified_landing_page_dns
-            ]):
-                return True
