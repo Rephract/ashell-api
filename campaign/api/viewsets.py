@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
-from campaign.api.serializers import DomainSerializer, EmailTemplateSerializer, LandingPageSerializer, SendingProfileSerializer
-from campaign.models import Domain, EmailTemplate, LandingPage, SendingProfile
+from campaign.api.serializers import DomainSerializer, EmailTemplateSerializer, LandingPageSerializer, ScenarioSerializer, SendingProfileSerializer
+from campaign.models import Domain, EmailTemplate, LandingPage, Scenario, SendingProfile
 
 
 class BaseModelViewSet(ModelViewSet):
@@ -33,3 +33,9 @@ class LandingPageViewset(BaseModelViewSet):
 class SendingProfileViewset(BaseModelViewSet):
     queryset = SendingProfile.objects.all()
     serializer_class = SendingProfileSerializer
+
+
+class ScenarioViewset(BaseModelViewSet):
+    queryset = Scenario.objects.all()
+    serializer_class = ScenarioSerializer
+

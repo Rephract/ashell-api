@@ -31,3 +31,4 @@ class SendingProfileViewSetTest(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         sending_profile = SendingProfile.objects.filter(organization=self.user.profile.organization).first()
         self.assertEqual(sending_profile.sender, data['sender'])
+

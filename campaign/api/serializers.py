@@ -73,8 +73,7 @@ class SendingProfileSerializer(serializers.ModelSerializer):
             'prefix',
             'domain',
             'full_sender_address',  
-            'is_verified_smtp_dns',
-            "is_verified_landing_page_dns"
+            'is_verified_dns',
         ]
 
     def validate(self, attrs):
@@ -82,7 +81,7 @@ class SendingProfileSerializer(serializers.ModelSerializer):
             id=self.initial_data['domain']
         ).first()
         if not domain:
-            raise serializers.ValidationError(_("No such domain"))
+            raise serializers.ValidationError(_("Domain is not exists in this organization"))
         email_address = f"{attrs['prefix']}@{domain.name}"
         if not validators.email(email_address):
             raise serializers.ValidationError(_("Sender email address is not valid"))
@@ -99,10 +98,15 @@ class ScenarioSerializer(serializers.ModelSerializer):
             'description',
             'email_template',
             'landing_page',
+            'sending_profile',
             'tags',
             'is_global'
+            'is_draft'
         ]
 
-    # def validate(self, value):
-    #     if 
-    #     return value
+    def validate_sending_profile(self, value):
+        sending_profile = SendingProfile.objects.filter(id=value).first()
+        if not sending_profile.is_verified_dns and not self.initial_data['is_draft']:
+            raise serializers.ValidationError(_("DNS records must be verified."))
+
+        return value
