@@ -167,6 +167,3 @@ class Scenario(BaseModel):
     def __str__(self):
         return self.name
 
-    @property
-    def tags(self):
-        return self.tags.filter(user=self.user)

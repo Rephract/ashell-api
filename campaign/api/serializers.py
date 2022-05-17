@@ -100,13 +100,11 @@ class ScenarioSerializer(serializers.ModelSerializer):
             'landing_page',
             'sending_profile',
             'tags',
-            'is_global'
+            'is_global',
             'is_draft'
         ]
 
     def validate_sending_profile(self, value):
-        sending_profile = SendingProfile.objects.filter(id=value).first()
-        if not sending_profile.is_verified_dns and not self.initial_data['is_draft']:
+        if not value.is_verified_dns and not self.initial_data['is_draft']:
             raise serializers.ValidationError(_("DNS records must be verified."))
-
         return value
