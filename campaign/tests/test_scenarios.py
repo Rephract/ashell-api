@@ -20,10 +20,11 @@ class ScenarioViewSetTest(BaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_scenario_create(self):
-        domain = DomainFactory()
+        domain = DomainFactory(
+            is_verified_dns=True
+        )
         sending_profile = SendingProfileFactory(
             domain_id=domain.id,
-            is_verified_dns=True
         )
         landing_page = LandingPageFactory()
         email_template = EmailTemplateFactory()
@@ -43,11 +44,12 @@ class ScenarioViewSetTest(BaseTestCase):
         scenario = Scenario.objects.filter(organization=self.user.profile.organization).first()
         self.assertEqual(scenario.name, data['name'])
 
-    def test_scenario_create_unverified_dns(self):
-        domain = DomainFactory()
+    def test_scenario_create_unverified_dns_and_not_draft(self):
+        domain = DomainFactory(
+            is_verified_dns=False
+        )
         sending_profile = SendingProfileFactory(
             domain_id=domain.id,
-            is_verified_dns=False
         )
         landing_page = LandingPageFactory()
         email_template = EmailTemplateFactory()
@@ -64,3 +66,28 @@ class ScenarioViewSetTest(BaseTestCase):
 
         res = self.client.post(create_url, data=data, format="json")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_scenario_create_unverified_dns_and_draft(self):
+        domain = DomainFactory(
+            is_verified_dns=False
+        )
+        sending_profile = SendingProfileFactory(
+            domain_id=domain.id,
+        )
+        landing_page = LandingPageFactory()
+        email_template = EmailTemplateFactory()
+
+        create_url = reverse('campaigns:scenario-list')
+        data = {
+            'name': 'Test Scenario',
+            'description': "Test desc",
+            'email_template': email_template.id,
+            'landing_page': landing_page.id,
+            'sending_profile': sending_profile.id,
+            'is_draft': True
+        }
+
+        res = self.client.post(create_url, data=data, format="json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        scenario = Scenario.objects.filter(organization=self.user.profile.organization).first()
+        self.assertTrue(scenario.is_draft)

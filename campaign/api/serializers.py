@@ -73,7 +73,6 @@ class SendingProfileSerializer(serializers.ModelSerializer):
             'prefix',
             'domain',
             'full_sender_address',  
-            'is_verified_dns',
         ]
 
     def validate(self, attrs):
@@ -105,6 +104,6 @@ class ScenarioSerializer(serializers.ModelSerializer):
         ]
 
     def validate_sending_profile(self, value):
-        if not value.is_verified_dns and not self.initial_data['is_draft']:
+        if not value.domain.is_verified_dns and not self.initial_data['is_draft']:
             raise serializers.ValidationError(_("DNS records must be verified."))
         return value

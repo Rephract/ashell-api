@@ -14,6 +14,8 @@ class DomainFactory(factory.django.DjangoModelFactory):
     organization_id = 1
     name = factory.Faker('domain_name')
     public_key = ""
+    is_verified_dns = factory.fuzzy.FuzzyChoice(choices=[True, True, True, False])
+
 
 
 class SendingProfileFactory(factory.django.DjangoModelFactory):
@@ -24,7 +26,6 @@ class SendingProfileFactory(factory.django.DjangoModelFactory):
     organization_id = 1
     sender = factory.Faker('name')
     domain_id = None
-    is_verified_dns = factory.fuzzy.FuzzyChoice(choices=[True, True, True, False])
 
     @factory.lazy_attribute
     def prefix(self):

@@ -20,6 +20,7 @@ class BaseModel(models.Model):
 class Domain(BaseModel):
     name = models.CharField(max_length=255, unique=True)
     public_key = models.TextField(blank=True)
+    is_verified_dns = models.BooleanField(default=False, help_text="Is domain verified for SMTP server")
 
     class Meta:
         db_table = "domain"
@@ -32,7 +33,6 @@ class SendingProfile(BaseModel):
     sender = models.CharField(max_length=255, help_text="Friendly sender name",)
     prefix = models.CharField(max_length=255, help_text="Prefix of sender (partition before @)", )
     domain = models.ForeignKey('Domain', on_delete=models.CASCADE)
-    is_verified_dns = models.BooleanField(default=False, help_text="Is domain verified for SMTP server")
 
     class Meta:
         db_table = "sending_profile"
@@ -166,4 +166,3 @@ class Scenario(BaseModel):
 
     def __str__(self):
         return self.name
-

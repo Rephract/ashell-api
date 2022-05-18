@@ -1,6 +1,11 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+
 from campaign.api.serializers import DomainSerializer, EmailTemplateSerializer, LandingPageSerializer, ScenarioSerializer, SendingProfileSerializer
 from campaign.models import Domain, EmailTemplate, LandingPage, Scenario, SendingProfile
+from celery import current_app as app
 
 
 class BaseModelViewSet(ModelViewSet):
@@ -19,6 +24,20 @@ class DomainViewset(BaseModelViewSet):
     queryset = Domain.objects.all()
     serializer_class = DomainSerializer
 
+    @action(detail=True, url_path='verify-dns', methods=['GET'])
+    def verify_dns(self, request):
+        
+        task = app.send_task(
+            'launcher.tasks.launch_campaign',
+            args=[campaign.id],
+            kwargs={
+                "is_restart": campaign.is_remigrate
+            }
+        )
+
+        return Response({
+            "entities": serializer.data
+        })
 
 class EmailTemplateViewset(BaseModelViewSet):
     queryset = EmailTemplate.objects.all()

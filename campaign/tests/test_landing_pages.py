@@ -32,7 +32,7 @@ class LandingPageViewSetTest(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         landing_page = LandingPage.objects.filter(organization=self.user.profile.organization).first()
         self.assertEqual(landing_page.name, data['name'])
-    
+
     def test_landing_page_slug_unique(self):
         create_url = reverse('campaigns:landing-page-list')
         data = {
